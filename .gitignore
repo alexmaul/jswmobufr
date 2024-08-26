@@ -1,0 +1,6 @@
+/.*project
+/node_modules/
+/package-lock.json
+/test-data
+*.bin
+*.log

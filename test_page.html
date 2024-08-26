@@ -1,0 +1,45 @@
+<html>
+<head>
+<script type="module" src="./jswmobufr.js"></script>
+<script type="module">
+    const filereader = new FileReader();
+    var reader;
+
+	function loadJSON(url, callback) {
+		var xobj = new XMLHttpRequest();
+		xobj.overrideMimeType("application/json");
+		xobj.open('GET', url, true);
+		xobj.onreadystatechange = function () {
+			if (xobj.readyState == 4 && xobj.status == "200") {
+				callback(JSON.parse(xobj.responseText));
+			}
+		};
+		xobj.send(null);
+	}
+        
+    function decode_upload() {
+        document.getElementById('bufr_text').innerHTML = "";
+        const fileobj = document.getElementById("bufr_file").files[0];
+        filereader.readAsBinaryString(fileobj);
+        filereader.onload = () => {
+            let file_data = filereader.result;
+            var buffer = reader.decode(file_data.slice(file_data.indexOf("BUFR")));
+            document.getElementById('bufr_text').innerHTML = buffer.join("<br>");
+        };
+    }
+
+	import {JsWmoBufrReader} from "./jswmobufr.js";
+	loadJSON("./tables.json", (tables) => {
+		reader = new JsWmoBufrReader("text", tables);
+	});
+
+    document.getElementById("submit_text").onclick = decode_upload;
+</script>
+</head>
+<body>
+    <h3>BUFR-Text:</h3>
+    <input id="bufr_file" type="file">
+    <button id="submit_text">decode</button>
+    <pre id="bufr_text"></pre>
+</body>
+</html>
